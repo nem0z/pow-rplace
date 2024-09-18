@@ -14,6 +14,24 @@ type Queue struct {
 	len  int
 }
 
+func New(items ...interface{}) *Queue {
+	queue := &Queue{nil, nil, len(items)}
+	if queue.len == 0 {
+		return queue
+	}
+
+	queue.head = &node{nil, nil, items[0]}
+	prev := queue.head
+	for i := 1; i < len(items); i++ {
+		node := &node{nil, prev, items[i]}
+		prev.next = node
+		prev = node
+	}
+
+	queue.tail = prev
+	return queue
+}
+
 func (q *Queue) Push(item interface{}) {
 	if q == nil {
 		log.Fatal("Trying to push in a queue wich is nil")

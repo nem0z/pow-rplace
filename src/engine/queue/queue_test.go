@@ -5,7 +5,7 @@ import (
 )
 
 func TestQueue_Push(t *testing.T) {
-	q := &Queue{}
+	q := New()
 
 	q.Push(1)
 	q.Push(2)
@@ -25,7 +25,7 @@ func TestQueue_Push(t *testing.T) {
 }
 
 func TestQueue_Pop(t *testing.T) {
-	q := &Queue{}
+	q := New()
 
 	q.Push(1)
 	q.Push(2)
@@ -64,7 +64,7 @@ func TestQueue_Pop(t *testing.T) {
 }
 
 func TestQueue_PushPopLen(t *testing.T) {
-	q := &Queue{}
+	q := New()
 
 	// Initial length should be 0
 	if q.Len() != 0 {
@@ -127,5 +127,66 @@ func TestQueue_PushPopLen(t *testing.T) {
 	// Length should still be 0
 	if q.Len() != 0 {
 		t.Errorf("Expected length 0 after popping all items, got %d", q.Len())
+	}
+}
+
+func TestNew_SingleItem(t *testing.T) {
+	// Create a queue with one item
+	q := New(1)
+
+	// Test that the length is correct
+	if q.Len() != 1 {
+		t.Errorf("Expected queue length 1, got %d", q.Len())
+	}
+
+	// Test that the head and tail are the same when only one item is present
+	if q.head != q.tail {
+		t.Error("Expected head and tail to be the same when only one item is in the queue")
+	}
+
+	// Test the value of the head item
+	if q.head.item != 1 {
+		t.Errorf("Expected head item to be 1, got %v", q.head.item)
+	}
+
+	// Test popping the item and the queue becomes empty
+	if q.Pop() != 1 {
+		t.Errorf("Expected to pop 1, got %v", q.Pop())
+	}
+
+	if q.Len() != 0 {
+		t.Errorf("Expected queue length 0 after popping, got %d", q.Len())
+	}
+}
+
+func TestNew_MultipleItems(t *testing.T) {
+	// Create a queue with 10 items
+	items := []interface{}{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+	q := New(items...)
+
+	// Test that the length is correct
+	if q.Len() != 10 {
+		t.Errorf("Expected queue length 10, got %d", q.Len())
+	}
+
+	// Test the value of the head and tail
+	if q.head.item != 1 {
+		t.Errorf("Expected head item to be 1, got %v", q.head.item)
+	}
+	if q.tail.item != 10 {
+		t.Errorf("Expected tail item to be 10, got %v", q.tail.item)
+	}
+
+	// Test popping all items in sequence
+	for i := 1; i <= 10; i++ {
+		item := q.Pop()
+		if item != i {
+			t.Errorf("Expected to pop %d, got %v", i, item)
+		}
+	}
+
+	// Test that the queue is empty after popping all items
+	if q.Len() != 0 {
+		t.Errorf("Expected queue length 0 after popping all items, got %d", q.Len())
 	}
 }
